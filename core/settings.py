@@ -23,15 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-au$#i1-8qzyxra0jcpw-v#7!67^7plc9m#b)r-pdj1%zz7=yp9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['']
 
 # In your settings.py
 SECURE_REDIRECT_EXEMPT = ['upi://']
 
 
 
+DEBUG = False
+
+ALLOWED_HOSTS = ['loanaidapp.pythonanywhere.com']
+
+# Add this if using whitenoise for static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 
