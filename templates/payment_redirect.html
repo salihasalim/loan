@@ -4,6 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Processing Payment...</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 120, 0.1);
+            width: 90%;
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header {
+            color: #1a73e8;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        #qr-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px dashed #1a73e8;
+            border-radius: 8px;
+            background-color: white;
+        }
+        
+        #qr-section img {
+            margin: 15px auto;
+            display: block;
+            box-shadow: 0 2px 6px rgba(0, 0, 120, 0.15);
+            border-radius: 4px;
+        }
+        
+        #manual-pay {
+            display: inline-block;
+            background-color: #1a73e8;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        #manual-pay:hover {
+            background-color: #0d5bbc;
+            transform: translateY(-2px);
+        }
+        
+        form {
+            margin-top: 30px;
+            text-align: left;
+            width: 100%;
+        }
+        
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+        
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        
+        input[type="file"] {
+            padding: 8px;
+            background-color: #f5f9ff;
+        }
+        
+        button[type="submit"] {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        button[type="submit"]:hover {
+            background-color: #0d5bbc;
+        }
+        
+        .status-message {
+            background-color: #e6f4ff;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #1a73e8;
+        }
+    </style>
     <script>
         function isMobile() {
             return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -28,65 +144,35 @@
     </script>
 </head>
 <body>
-    <h3>Processing Payment...</h3>
-    
-    <!-- QR Code Section (Visible on Desktop) -->
-    <div id="qr-section" style="display: none;">
-        <p>Scan the QR Code to Pay:</p>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ upi_link }}" alt="UPI QR Code">
-    </div>
+    <div class="container">
+        <h2 class="header">Processing Payment</h2>
+        
+        <div class="status-message">
+            Please complete your payment to continue. We'll verify your transaction shortly.
+        </div>
+        
+        <!-- QR Code Section (Visible on Desktop) -->
+        <div id="qr-section" style="display: none;">
+            <p><strong>Scan the QR Code to Pay:</strong></p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ upi_link }}" alt="UPI QR Code">
+        </div>
 
-    <!-- Manual Payment Button (Visible on Mobile if auto-open fails) -->
-    <a id="manual-pay" href="{{ upi_link }}" style="display: none; padding: 10px; background-color: blue; color: white; text-decoration: none; border-radius: 5px;">
-        Pay via UPI
-    </a>
-    <form action="{% url 'payment_confirmation' %}" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+        <!-- Manual Payment Button (Visible on Mobile if auto-open fails) -->
+        <a id="manual-pay" href="{{ upi_link }}" style="display: none;">
+            Pay via UPI
+        </a>
         
-        <label>Transaction ID (Optional):</label>
-        <input type="text" name="transaction_id" placeholder="Enter UPI Transaction ID">
-        
-        <label>Upload Payment Screenshot:</label>
-        <input type="file" name="payment_screenshot" required>
-        
-        <button type="submit">Submit Payment</button>
-    </form>
+        <form action="{% url 'payment_confirmation' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <label>Transaction ID (Optional):</label>
+            <input type="text" name="transaction_id" placeholder="Enter UPI Transaction ID">
+            
+            <label>Upload Payment Screenshot:</label>
+            <input type="file" name="payment_screenshot" required>
+            
+            <button type="submit">Submit Payment</button>
+        </form>
+    </div>
 </body>
 </html>
-
-
-
-
-
-{% comment %} <div class="container mt-5">
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h3>Payment Required</h3>
-        </div>
-        <div class="card-body">
-            <h4>Franchise Membership Payment</h4>
-            <p>Please complete your payment to activate your franchise account.</p>
-            
-            <div class="payment-details">
-                <p><strong>UPI ID:</strong> {{ upi_id }}</p>
-                <p><strong>Amount:</strong> ₹{{ payment_amount }}</p>
-                <p><strong>Payment Note:</strong> {{ payment_note }}</p>
-            </div>
-
-            <div class="payment-instructions">
-                <h5>Payment Instructions:</h5>
-                <ol>
-                    <li>Open your UPI app (Google Pay, PhonePe, etc.)</li>
-                    <li>Scan the QR code or enter the UPI ID: {{ upi_id }}</li>
-                    <li>Enter the amount: ₹{{ payment_amount }}</li>
-                    <li>Complete the payment</li>
-                </ol>
-            </div>
-
-            <form method="post" action="{% url 'payment_confirmation' %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-success">I have completed the payment</button>
-            </form>
-        </div>
-    </div>
-</div> {% endcomment %}
